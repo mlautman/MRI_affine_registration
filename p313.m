@@ -1,37 +1,38 @@
-% 3.1.3 Testing the Correctness of Gradient Computation
-% Requires files sub001_mri.nii and sub002_mri.nii to be in the same directory
 
+% 3.1.3 Testing the Correctness of Gradient Computation
 [image1,spacing] = myReadNifti('sub001_mri.nii');
 [image2,spacing2] = myReadNifti('sub002_mri.nii');
 p = [1,0,0,0,1,0,0,0,1,0,0,0]';
 
-%gaussian LPF
+% Gaussian LPF
 sigma = 1;
 smoothedimage1 = myGaussianLPF(image1,sigma);
 smoothedimage2 = myGaussianLPF(image2,sigma);
 
-%analytical gradient
+% analytical gradient
 [E,g] = myAffineObjective3D(p,smoothedimage1,smoothedimage2);
 
-%numerical gradient
+% numerical gradient
 epsilon = 1e-4;
 gnumer = ones(12,1);
+
 for j = 1:12
-    %Create ej vector
+    % Create ej vector
     ej = zeros(12,1);
     ej(j) = 1;
+
+    % Add/subtract ej*epsilon vector to p
+    pup = p + ones(12,1).*ej*epsilon;
+    pdown = p - ones(12,1).*ej*epsilon;
     
-    %Add/subtract ej*epsilon vector to p
-    pup = p + ones(12,1)*j*epsilon;
-    pdown = p - ones(12,1)*j*epsilon;
-    
-    %Compute E terms for numerical gradient approximation
+    % Compute E terms for numerical gradient approximation
     [Eup,~] = myAffineObjective3D(pup,smoothedimage1,smoothedimage2);
     [Edown,~] = myAffineObjective3D(pdown,smoothedimage1,smoothedimage2);
     
-    %Compute 
+    % Compute dE/dpj
     gnumer(j) = (Eup - Edown)/(2*epsilon);
 end
 
-%Compute difference
+% Compute relative error
 diffvector = g - gnumer;
+relerr = 100.*(diffvector./g);
