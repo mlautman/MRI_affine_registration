@@ -1,30 +1,27 @@
 
-function [E,g] = myAffineObjective3D(p,I,J)
+function [E,g] = myAffineObjective3D(p,I,J,varargin)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Objective function for 3D Affine Transform  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% inputs - p,I,J                                                        %%
+%% inputs - p,I,J,dJ/dX (optional)                                       %%
 %% p - 12 x 1 parameter vector                                           %%
 %% I - fixed image                                                       %%
 %% J - moving image                                                      %%
+%% dJ/dX - [dJ/dy dJ/dy dJ/dz], gradient of moving image                 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% outputs - E,g                                                         %%
 %% E - value of the objective function                                   %%
 %% g - gradient of the objective function                                %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% check if number of arguments are between 3 and 4 
+minarg = 3;
+maxarg = 4;
+narginchk(minarg, maxarg);
+    
 A = reshape(p(1:9),[3,3]);
 b = p(10:12);
-
-% resample moving image
-J_t = myTransformImage(I,J,A,b,'linear');
-
-% compute the difference image
-diff_image = I - J_t;
-
-% compute the value of the objective function
-E = sum(sum(sum(diff_image.^2)));
 
 % coordinates of voxels in fixed image    
 [x, y, z] = ndgrid(1:1:size(I,1),1:1:size(I,2),1:1:size(I,3));
@@ -40,17 +37,36 @@ phi_x = phi(1,:);
 phi_y = phi(2,:);
 phi_z = phi(3,:);
 
-%phi = reshape(phi, size(I));
-
 phi_x = reshape(phi_x, size(I));
 phi_y = reshape(phi_y, size(I));
 phi_z = reshape(phi_z, size(I));
 
+% resample moving image
+data = my_interp3_precompute(size(I), phi_x, phi_y, phi_z);
+J_t = my_interp3(J,data);
+
+%J_t = myTransformImage(I,J,A,b,'linear');
+
+% compute the difference image
+diff_image = I - J_t;
+
+% compute the value of the objective function
+E = sum(sum(sum(diff_image.^2)));
+
 % compute gradient of resampled image
-[dJdy, dJdx, dJdz] = gradient(J);
-dJdx_phi = interpn(dJdx,phi_x,phi_y,phi_z,'linear',0);
-dJdy_phi = interpn(dJdy,phi_x,phi_y,phi_z,'linear',0);
-dJdz_phi = interpn(dJdz,phi_x,phi_y,phi_z,'linear',0);
+if nargin == 4 && ~isempty(varargin{1});
+    [dJdy, dJdx, dJdz] = varargin{1};
+else
+    [dJdy, dJdx, dJdz] = gradient(J);
+end
+
+dJdx_phi = my_interp3(dJdx,data);
+dJdy_phi = my_interp3(dJdy,data);
+dJdz_phi = my_interp3(dJdz,data);
+
+% dJdx_phi = interpn(dJdx,phi_x,phi_y,phi_z,'linear',0);
+% dJdy_phi = interpn(dJdy,phi_x,phi_y,phi_z,'linear',0);
+% dJdz_phi = interpn(dJdz,phi_x,phi_y,phi_z,'linear',0);
 
 g = zeros(12,1);
 
