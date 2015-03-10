@@ -4,20 +4,23 @@ function [E,g] = myAffineObjective3D(p,I,J,varargin)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Objective function for 3D Affine Transform  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% inputs - p,I,J,dJ/dX (optional)                                       %%
+%% inputs - p,I,J                                                        %%
+%% optional - dJ/dy,dJ/dx,dJ/dz                                          %%
 %% p - 12 x 1 parameter vector                                           %%
 %% I - fixed image                                                       %%
 %% J - moving image                                                      %%
-%% dJ/dX - [dJ/dy dJ/dy dJ/dz], gradient of moving image                 %%
+%% dJ/dy - gradient of moving image in y direction                       %%
+%% dJ/dx - gradient of moving image in x direction                       %%
+%% dJ/dz - gradient of moving image in z direction                       %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% outputs - E,g                                                         %%
 %% E - value of the objective function                                   %%
 %% g - gradient of the objective function                                %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% check if number of arguments are between 3 and 4 
+% check if number of arguments are between 3 and 6 
 minarg = 3;
-maxarg = 4;
+maxarg = 6;
 narginchk(minarg, maxarg);
     
 A = reshape(p(1:9),[3,3]);
@@ -45,7 +48,7 @@ phi_z = reshape(phi_z, size(I));
 data = my_interp3_precompute(size(I), phi_x, phi_y, phi_z);
 J_t = my_interp3(J,data);
 
-%J_t = myTransformImage(I,J,A,b,'linear');
+% J_t = interpn(J,phi_x,phi_y,phi_z,'linear',0);
 
 % compute the difference image
 diff_image = I - J_t;
@@ -54,8 +57,10 @@ diff_image = I - J_t;
 E = sum(sum(sum(diff_image.^2)));
 
 % compute gradient of resampled image
-if nargin == 4 && ~isempty(varargin{1});
-    [dJdy, dJdx, dJdz] = varargin{1};
+if (nargin == 6 && ~isempty(varargin{1}) && ~isempty(varargin{2}) && ~isempty(varargin{3}))
+    dJdy = varargin{1};
+    dJdx = varargin{2};
+    dJdz = varargin{3};
 else
     [dJdy, dJdx, dJdz] = gradient(J);
 end
