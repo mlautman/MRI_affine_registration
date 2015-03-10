@@ -1,5 +1,8 @@
-%problem 3.1.4
-%Minimizing the objective function and displaying resulting registration
+
+% problem 3.1.4
+% Minimizing the objective function and displaying resulting registration
+
+clear;
 
 % load images
 [image1,spacing] = myReadNifti('sub001_mri.nii');

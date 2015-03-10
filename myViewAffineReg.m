@@ -22,17 +22,17 @@ crosshair = round(dimen/2);
 
 % k-means segmentation for XY slice
 fixed_xy = transpose(squeeze(fixed(:,:,crosshair(3))));
-[idx_xy, ctr_xy] = kmeans(fixed_xy(fixed_xy > 0), 3);
+[~, ctr_xy] = kmeans(fixed_xy(fixed_xy > 0), 3);
 cont_xy = conv(sort(ctr_xy), [0.5 0.5], 'valid');
 
 % k-means segmentation for XZ slice
 fixed_xz = transpose(squeeze(fixed(:,crosshair(2),:)));
-[idx_xz, ctr_xz] = kmeans(fixed_xz(fixed_xz > 0), 3);
+[~, ctr_xz] = kmeans(fixed_xz(fixed_xz > 0), 3);
 cont_xz = conv(sort(ctr_xz), [0.5 0.5], 'valid');
 
 % k-means segmentation for YZ slice
 fixed_yz = transpose(squeeze(fixed(crosshair(1),:,:)));
-[idx_yz, ctr_yz] = kmeans(fixed_yz(fixed_yz > 0), 3);
+[~, ctr_yz] = kmeans(fixed_yz(fixed_yz > 0), 3);
 cont_yz = conv(sort(ctr_yz), [0.5 0.5], 'valid');
 
 resampled = myTransformImage(fixed, moving, A, b);

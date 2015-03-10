@@ -1,5 +1,7 @@
 
 % 3.1.3 Testing the Correctness of Gradient Computation
+clear;
+
 [image1,spacing] = myReadNifti('sub001_mri.nii');
 [image2,spacing2] = myReadNifti('sub002_mri.nii');
 p = [1,0,0,0,1,0,0,0,1,0,0,0]';
