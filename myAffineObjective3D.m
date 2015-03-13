@@ -73,42 +73,18 @@ dJdz_phi = my_interp3(dJdz,data);
 % dJdy_phi = interpn(dJdy,phi_x,phi_y,phi_z,'linear',0);
 % dJdz_phi = interpn(dJdz,phi_x,phi_y,phi_z,'linear',0);
 
-g = zeros(12,1);
-
-% compute partial derivative w.r.t. p1
-g(1) = -2*sum(sum(sum(diff_image.*dJdx_phi.*x)));
-
-% compute partial derivative w.r.t. p2
-g(2) = -2*sum(sum(sum(diff_image.*dJdy_phi.*x)));
-
-% compute partial derivative w.r.t. p3
-g(3) = -2*sum(sum(sum(diff_image.*dJdz_phi.*x)));
-
-% compute partial derivative w.r.t. p4
-g(4) = -2*sum(sum(sum(diff_image.*dJdx_phi.*y)));
-
-% compute partial derivative w.r.t. p5
-g(5) = -2*sum(sum(sum(diff_image.*dJdy_phi.*y)));
-
-% compute partial derivative w.r.t. p6
-g(6) = -2*sum(sum(sum(diff_image.*dJdz_phi.*y)));
-
-% compute partial derivative w.r.t. p7
-g(7) = -2*sum(sum(sum(diff_image.*dJdx_phi.*z)));
-
-% compute partial derivative w.r.t. p8
-g(8) = -2*sum(sum(sum(diff_image.*dJdy_phi.*z)));
-
-% compute partial derivative w.r.t. p9
-g(9) = -2*sum(sum(sum(diff_image.*dJdz_phi.*z)));
-
-% compute partial derivative w.r.t. p10
-g(10) = -2*sum(sum(sum(diff_image.*dJdx_phi)));
-
-% compute partial derivative w.r.t. p11
-g(11) = -2*sum(sum(sum(diff_image.*dJdy_phi)));
-
-% compute partial derivative w.r.t. p12
-g(12) = -2*sum(sum(sum(diff_image.*dJdz_phi)));
+% compute partial derivative of E w.r.t. p
+g = [-2*sum(sum(sum(diff_image.*dJdx_phi.*x)));
+    -2*sum(sum(sum(diff_image.*dJdy_phi.*x)));
+    -2*sum(sum(sum(diff_image.*dJdz_phi.*x)));
+    -2*sum(sum(sum(diff_image.*dJdx_phi.*y)));
+    -2*sum(sum(sum(diff_image.*dJdy_phi.*y)));
+    -2*sum(sum(sum(diff_image.*dJdz_phi.*y)));
+    -2*sum(sum(sum(diff_image.*dJdx_phi.*z)));
+    -2*sum(sum(sum(diff_image.*dJdy_phi.*z)));
+    -2*sum(sum(sum(diff_image.*dJdz_phi.*z)));
+    -2*sum(sum(sum(diff_image.*dJdx_phi)));
+    -2*sum(sum(sum(diff_image.*dJdy_phi)));
+    -2*sum(sum(sum(diff_image.*dJdz_phi)))];
 
 end
