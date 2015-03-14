@@ -24,6 +24,9 @@ b = zeros(3,1);
 
 p = [reshape(A,9,1);b];
 
+% Create a struct object for storing gradient of moving image
+g_struct = struct('dy',{},'dx',{},'dz',{});
+
 for i = 1:level
     % skip levels with 0 iterations
     if iter(i)>0
@@ -36,11 +39,15 @@ for i = 1:level
         subsampI = smoothedI(1:coeff:end,1:coeff:end,1:coeff:end);
         subsampJ = smoothedJ(1:coeff:end,1:coeff:end,1:coeff:end);
         
+        % compute gradient of moving image
+        [g_struct(1).dy, g_struct(1).dx, g_struct(1).dz] = gradient(subsampJ);
+        
         % Set options for optimization
         options = optimset('GradObj','on','Display','iter','MaxIter',iter(i));
         
         % Run optimization
-        [p,fval] = fminunc(@(x)(myAffineObjective3D(x, subsampI, subsampJ)), p, options);
+        [p,fval] = fminunc(@(x)(myAffineObjective3D(x, subsampI, subsampJ, g_struct(1).dy, g_struct(1).dx, g_struct(1).dz)), p, options);
+        % [p,fval] = fminunc(@(x)(myAffineObjective3D(x, subsampI, subsampJ)), p, options);
     end
     
     A = [p(1:3) p(4:6) p(7:9)];
