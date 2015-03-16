@@ -83,6 +83,6 @@ for counts = 1:5
     % Write averageimage(counts) to file
     start = 'Avgimg';
     ending = '_mri.nii';
-    filename = strcat(start,num2str(i),ending);
+    filename = strcat(start,num2str(counts),ending);
     myWriteNifti(filename,averageimage,[80, 96, 80]);
 end
