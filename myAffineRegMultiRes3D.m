@@ -43,11 +43,13 @@ for i = 1:level
         [g_struct(1).dy, g_struct(1).dx, g_struct(1).dz] = gradient(subsampJ);
         
         % Set options for optimization
-        options = optimset('GradObj','on','Display','iter','MaxIter',iter(i));
+        options = optimset('GradObj','on','Hessian','on','Display','iter','MaxIter',iter(i));
+        %options = optimset('GradObj','on','Display','iter','MaxIter',iter(i));
         
         % Run optimization
-        [p,fval] = fminunc(@(x)(myAffineObjective3D(x, subsampI, subsampJ, g_struct(1).dy, g_struct(1).dx, g_struct(1).dz)), p, options);
-        % [p,fval] = fminunc(@(x)(myAffineObjective3D(x, subsampI, subsampJ)), p, options);
+        [p,fval] = fminunc(@(x)(myAffineObjective3DwithHessian(x, subsampI, subsampJ, g_struct(1).dy, g_struct(1).dx, g_struct(1).dz)), p, options);
+        %[p,fval] = fminunc(@(x)(myAffineObjective3D(x, subsampI, subsampJ, g_struct(1).dy, g_struct(1).dx, g_struct(1).dz)), p, options);
+        %[p,fval] = fminunc(@(x)(myAffineObjective3D(x, subsampI, subsampJ)), p, options);
     end
     
     A = [p(1:3) p(4:6) p(7:9)];

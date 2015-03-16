@@ -17,12 +17,21 @@ smoothedimage2 = myGaussianLPF(image2,2*sigma);
 subsamp1 = smoothedimage1(1:2:end,1:2:end,1:2:end);
 subsamp2 = smoothedimage2(1:2:end,1:2:end,1:2:end);
 
+% Create a struct object for storing gradient of moving image
+g_struct = struct('dy',{},'dx',{},'dz',{});
+
+% compute gradient of moving image
+[g_struct(1).dy, g_struct(1).dx, g_struct(1).dz] = gradient(subsamp2);
+
 % Set options for optimization
-options = optimset('GradObj','on','Display','iter','MaxIter',50);
+options = optimset('GradObj','on','Hessian','on','Display','iter','MaxIter',50);
+% options = optimset('GradObj','on','Display','iter','MaxIter',50);
 
 % Run optimization
 pstart = [1,0,0,0,1,0,0,0,1,0,0,0]';
-[p,fval] = fminunc(@(x)(myAffineObjective3D(x, subsamp1, subsamp2)), pstart, options);
+[p,fval] = fminunc(@(x)(myAffineObjective3DwithHessian(x, subsamp1, subsamp2, g_struct(1).dy, g_struct(1).dx, g_struct(1).dz)), pstart, options);
+% [p,fval] = fminunc(@(x)(myAffineObjective3D(x, subsamp1, subsamp2, g_struct(1).dy, g_struct(1).dx, g_struct(1).dz)), pstart, options);
+% [p,fval] = fminunc(@(x)(myAffineObjective3D(x, subsamp1, subsamp2)), pstart, options);
 
 % output original results
 Aorig = reshape(pstart(1:9),[3,3]);
