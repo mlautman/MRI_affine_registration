@@ -33,6 +33,9 @@ for i = 2:20
     averageimage = (totalintensity + currentimage)/i;
 end
 
+% Write to file
+myWriteNifti('Avgimg0_mri.nii',averageimage,[80, 96, 80]);
+
 % Iterate 5 times
 for counts = 1:5
     % Register each image to current average
