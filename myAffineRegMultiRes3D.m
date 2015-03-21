@@ -38,6 +38,10 @@ for i = 1:level
         % subsample images by 2^(level - i)
         subsampI = smoothedI(1:coeff:end,1:coeff:end,1:coeff:end);
         subsampJ = smoothedJ(1:coeff:end,1:coeff:end,1:coeff:end);
+		
+		% perform histogram matching
+        %subsampJ = myHistMatch(subsampI,subsampJ);
+		%subsampJ = myHistMatch2(subsampI,subsampJ);
         
         % compute gradient of moving image
         [g_struct(1).dy, g_struct(1).dx, g_struct(1).dz] = gradient(subsampJ);
