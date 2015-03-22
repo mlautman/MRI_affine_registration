@@ -50,7 +50,7 @@ for i = 1:20
 end
 
 % Definte iteration vector and smoothing factor
-iter = 5;
+iter = [20,10,5];
 sigma = 1;
 % Initialize evaluation vector
 meanovl = zeros(5,1);
