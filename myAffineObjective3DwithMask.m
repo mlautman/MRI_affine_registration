@@ -5,7 +5,7 @@ function [E,g,H] = myAffineObjective3DwithMask(p,I,J,seg,varargin)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Objective function for 3D Affine Transform  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% inputs - p,I,J                                                        %%
+%% inputs - p,I,J,seg                                                    %%
 %% optional - dJ/dy,dJ/dx,dJ/dz                                          %%
 %% p - 12 x 1 parameter vector                                           %%
 %% I - fixed image                                                       %%
@@ -29,23 +29,32 @@ A = reshape(p(1:9),[3,3]);
 b = p(10:12);
 
 % coordinates of voxels in the mask    
-[p, q, r] = ind2sub(size(seg),find(seg ~= 0));  
+[l, m, n] = ind2sub(size(seg),find(seg ~= 0));
 
-S = [p q r]';
+[p, q, r] = ndgrid(min(l):min(l), min(m):max(m), min(n):max(n));
+
+S = transpose([p(:) q(:) r(:)]);
 b_rep = repmat(b, 1, numel(p));
 
 % transformation parameters
 phi = A*S + b_rep;
-phi = transpose(phi);
+
+phi_x = phi(1,:);
+phi_y = phi(2,:);
+phi_z = phi(3,:);
+
+phi_x = reshape(phi_x, size(p));
+phi_y = reshape(phi_y, size(p));
+phi_z = reshape(phi_z, size(p));
 
 % resample moving image
-data = my_interp3_precompute(size(I),phi(:,1),phi(:,2),phi(:,3));
-J_t = my_interp3(J,data);
+J_t = interpn(J,phi_x,phi_y,phi_z,'linear',0);
 
-% J_t = interpn(J,phi(:,1),phi(:,2),phi(:,3),'linear',0);
+% extract points in fixed image relevent to mask
+I_i = interpn(I,p,q,r,'linear',0);
 
 % compute the difference image
-diff_image = I(seg~=0) - J_t;
+diff_image = I_i - J_t;
 
 % compute the value of the objective function
 E = sum(sum(sum(diff_image.^2)));
@@ -59,13 +68,9 @@ else
     [dJdy, dJdx, dJdz] = gradient(J);
 end
 
-dJdx_phi = my_interp3(dJdx,data);
-dJdy_phi = my_interp3(dJdy,data);
-dJdz_phi = my_interp3(dJdz,data);
-
-% dJdx_phi = interpn(dJdx,phi_x,phi_y,phi_z,'linear',0);
-% dJdy_phi = interpn(dJdy,phi_x,phi_y,phi_z,'linear',0);
-% dJdz_phi = interpn(dJdz,phi_x,phi_y,phi_z,'linear',0);
+dJdx_phi = interpn(dJdx,phi_x,phi_y,phi_z,'linear',0);
+dJdy_phi = interpn(dJdy,phi_x,phi_y,phi_z,'linear',0);
+dJdz_phi = interpn(dJdz,phi_x,phi_y,phi_z,'linear',0);
 
 % compute partial derivative of E w.r.t. p
 g = [-2*sum(sum(sum(diff_image.*dJdx_phi.*p)));
@@ -86,15 +91,15 @@ g = [-2*sum(sum(sum(diff_image.*dJdx_phi.*p)));
 [Jyy, Jyx, Jyz] = gradient(dJdy);
 [Jzy, Jzx, Jzz] = gradient(dJdz);
 
-Jxx_phi = my_interp3(Jxx,data);
-Jxy_phi = my_interp3(Jxy,data);
-Jxz_phi = my_interp3(Jxz,data);
-Jyx_phi = my_interp3(Jyx,data);
-Jyy_phi = my_interp3(Jyy,data);
-Jyz_phi = my_interp3(Jyz,data);
-Jzx_phi = my_interp3(Jzx,data);
-Jzy_phi = my_interp3(Jzy,data);
-Jzz_phi = my_interp3(Jzz,data);
+Jxx_phi = interpn(Jxx,phi_x,phi_y,phi_z,'linear',0);
+Jxy_phi = interpn(Jxy,phi_x,phi_y,phi_z,'linear',0);
+Jxz_phi = interpn(Jxz,phi_x,phi_y,phi_z,'linear',0);
+Jyx_phi = interpn(Jyx,phi_x,phi_y,phi_z,'linear',0);
+Jyy_phi = interpn(Jyy,phi_x,phi_y,phi_z,'linear',0);
+Jyz_phi = interpn(Jyz,phi_x,phi_y,phi_z,'linear',0);
+Jzx_phi = interpn(Jzx,phi_x,phi_y,phi_z,'linear',0);
+Jzy_phi = interpn(Jzy,phi_x,phi_y,phi_z,'linear',0);
+Jzz_phi = interpn(Jzz,phi_x,phi_y,phi_z,'linear',0);
 
 % compute Hessian of E w.r.t. p
 H = zeros(12,12);
