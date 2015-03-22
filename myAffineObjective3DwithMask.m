@@ -32,7 +32,7 @@ b = p(10:12);
 % coordinates of voxels in the mask    
 [l, m, n] = ind2sub(size(seg),find(seg ~= 0));
 
-[p, q, r] = ndgrid(min(l):min(l), min(m):max(m), min(n):max(n));
+[p, q, r] = ndgrid(min(l):max(l), min(m):max(m), min(n):max(n));
 
 S = transpose([p(:) q(:) r(:)]);
 b_rep = repmat(b, 1, numel(p));
