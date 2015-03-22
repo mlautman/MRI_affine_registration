@@ -18,6 +18,7 @@ function [E,g,H] = myAffineObjective3DwithMask(p,I,J,seg,varargin)
 %% outputs - E,g                                                         %%
 %% E - value of the objective function                                   %%
 %% g - gradient of the objective function                                %%
+%% H - Hessian of the objective function                                 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % check if number of arguments are between 3 and 6 
