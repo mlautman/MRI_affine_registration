@@ -43,7 +43,14 @@ b_cell = cell(20,1);
 % Define iteration vector and smoothing factor
 iter = [20, 10, 5];
 sigma = 1;
-path = 'F:\Class Stuff\Biomed Image Analysis\Grand Assignment\train';
+
+
+% Evaluate performance
+if isunix()
+    path = strcat(pwd,'/train');
+else
+    path = strcat(pwd,'\train');
+end
 
 % Loop over each test image
 meanovl = zeros(20,1);

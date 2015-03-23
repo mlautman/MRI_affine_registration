@@ -4,8 +4,8 @@
 clear;
 
 % load images
-[image1,spacing] = myReadNifti('sub021_mri.nii');
-[image2,spacing2] = myReadNifti('sub001_mri.nii');
+[image1,spacing] = myReadNifti('sub001_mri.nii');
+[image2,spacing2] = myReadNifti('sub003_mri.nii');
 
 % Perform registration
 iter = [20,10,5];

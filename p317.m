@@ -34,5 +34,9 @@ for i = 1:20
 end
 
 % Evaluate performance
-path = 'F:\Class Stuff\Biomed Image Analysis\Grand Assignment\train';
+if isunix()
+    path = strcat(pwd,'/train');
+else
+    path = strcat(pwd,'\train');
+end
 meanovl = evaluateOnTrainingSet(path, A_cell, b_cell);

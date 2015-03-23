@@ -54,7 +54,12 @@ iter = [20,10,5];
 sigma = 1;
 % Initialize evaluation vector
 meanovl = zeros(5,1);
-path = 'D:\Desktop\Documents\Acads - II\Spring 2015\CIS 537\Grand Challenge 1\train';
+
+if isunix()
+    path = strcat(pwd,'/train');
+else
+    path = strcat(pwd,'\train');
+end
 
 % Iterate 5 times
 for counts = 1:5

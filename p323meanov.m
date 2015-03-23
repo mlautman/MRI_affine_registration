@@ -29,4 +29,10 @@ for i = 1:20
 end
 
 % Compute overlap
-meanov = evaluateOnTrainingSet('D:\Desktop\Documents\Acads - II\Spring 2015\CIS 537\Grand Challenge 1\train', A_cell, b_cell);
+
+if isunix()
+    path = strcat(pwd,'/train');
+else
+    path = strcat(pwd,'\train');
+end
+meanovl = evaluateOnTrainingSet(path, A_cell, b_cell);

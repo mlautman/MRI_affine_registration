@@ -56,8 +56,14 @@ iter = [5, 0, 0];
 sigma = 1;
 % Initialize evaluation vector
 meanovl = zeros(5,1);
-path = 'F:\Class Stuff\Biomed Image Analysis\Grand Assignment\train';
 
+
+
+if isunix()
+    path = strcat(pwd,'/train');
+else
+    path = strcat(pwd,'\train');
+end
 % Iterate 5 times
 for counts = 1:5
     % Gaussian LPF
