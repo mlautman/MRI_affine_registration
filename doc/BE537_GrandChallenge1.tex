@@ -1,0 +1,90 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{listings}
+\usepackage{mcode}
+\usepackage{fullpage}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{blindtext}
+
+\definecolor{lightgray}{gray}{0.5}
+\setlength{\parindent}{0pt}
+
+\begin{document}    
+
+	\begin{par}
+	
+		\title{BE 537 - Grand Challenge 1}		
+		\date{\today}
+		\author{James Wang, Michael Lautman, Shreel Vijayvargiya}
+		\maketitle
+	
+	\end{par}
+
+	\begin{par}
+		\section*{Introduction}
+		For this project we explored methods for performing groupwise registration between a set of brain images. We performed registration on a set of 3D brain images solving for transformations from the set of images into a common reference space. The quality of a registration was established by measuring how closely a set of labeled features in the images corresponded when projected into the common frame via the transformations we built.
+	\end{par}
+	
+	\begin{par}
+		\section*{3.1 The Basic Component}
+		\subsection*{3.1.1 Extend myView to Display Registration Results}
+			Our project uses a visualizer that takes in a fixed image, a moving image, the voxel spacing in the image, a rotation matrix and a translation vector. 
+			\begin{lstlisting}
+function myViewAffineReg(fixed, moving, spacing, A, b)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% myView extended to display affine transformation results %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 	inputs 
+%		fixed - fixed image                                     
+%		moving - moving image                                   
+%		spacing - voxel spacing                                 
+%		A - 3 x 3 rotation, scaling and shearing matrix         
+%		b - 3 x 1 translation matrix                            
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+			\end{lstlisting}
+			
+		\subsection*{3.1.2 3D Affine Registration Objective Function}
+			We compute the objective function for 3D registration using the equation below.
+			\begin{align*}
+				E(A,b) = \int_{\Omega} [ I(x) - J(Ax+b)]^{2} dx
+			\end{align*}
+
+			\begin{lstlisting}
+function [E,g] = myAffineObjective3D(p,I,J,varargin)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Objective function for 3D Affine Transform  %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% inputs
+% 	p - 12 x 1 parameter vector                     
+% 	I - fixed image                                 
+% 	J - moving image                                
+% 	varargin 
+% 		dJ/dy - gradient of moving image in y direction 
+% 		dJ/dx - gradient of moving image in x direction 
+% 		dJ/dz - gradient of moving image in z direction 
+% outputs                                 
+% 	E - value of the objective function             
+% 	g - gradient of the objective function          
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+			\end{lstlisting}
+
+		\subsection*{3.1.3 Testing the Correctness of Gradient Computation}
+			We verify our analytic gradient computation by computing a numerical gradient aproximation that utilizes the central finite difference approximation.
+
+			\begin{align*}
+				\frac{\partial E}{\partial p_{j}} |_{p} \simeq  \frac{E(p + \epsilon e_{j}) - E(p - \epsilon e_{j})}{2 \epsilon}
+			\end{align*}
+			
+			\lstinputlisting{../p313.m}
+			The maximum relative error we found using an epsilon of $1e-4$ was $0.01\%$.
+		
+		\subsection*{3.1.4 Testing our objective function by registering two images}
+		
+		\lstinputlisting{../p314.m}
+	\end{par}
+	
+
+\end{document}
+    
