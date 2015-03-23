@@ -145,7 +145,21 @@ function [E,g] = myAffineObjective3D(p,I,J,varargin)
 		The analytic hessian was computed within the objective function. For sub001 as the fixed image and sub002 as the moving image, maximum relative error was found to be $0.0584\%$. This shows that the results are still valid.  This enhancement resulted in a significant speedup compared to \lstinline|myAffineObjective3D.m|. This increased the speed of registration dramatically allowing us to run additional iterations at higher resolutions. Before the enhancement, we saw a baseline registration take $95.03 seconds$. After the enhancement, we saw the time drop to $33.81 seconds$. This speedup also enabled us to run many more tests as can be seen below
 		Source code:  \lstinline|myAffineObjective3DwithHessian.m|,  \lstinline|p324.m| \\\\
 		
-		\begin{tabular}{ | p{1.5cm} | p{1.5cm} | p{1.5cm} | p{1.5cm} | p{1.7cm} | p{1.5cm} | p{1.7cm} | p{1.5cm} |  }
+		
+		\section{Table of results for enhancements}
+		\begin{tabular}{|p{5cm}|p{8cm}|p{2cm}|}
+			\hline
+			Name & Description& meanovl \\ \hline \hline
+			3.2.1 Histogram Matching & Match histogram of fixed and moving image before performing registration & 0.2846 \\ \hline
+			3.2.2 Registration to an Unbiased Population-Derived Template & Create template by averaging input image intensities and registering to this average iteratively (j=5) & A0=0.2896 A5=0.3014\\ \hline
+			3.2.3 Defining a Mask & Set intensity to 0 for regions outside of the hippocampus using the segmentation images & .3643 \\ \hline
+			3.2.4 Analytic Hessian Computation & Compute analytic Hessian in the objective function to speed up computations and perform more iterations at higher resolution & 0.3111 \\ \hline
+		\end{tabular}
+
+		
+		\section{Experiments}
+		
+		\begin{tabular}{ | p{1.8cm} | p{1.5cm} | p{1.5cm} | p{1.5cm} | p{1.7cm} | p{1.5cm} | p{1.7cm} | p{1.5cm} |  }
 			\hline 
 			Fixed & Iter & Sigma & Hessian & Histogram & Mask & Template & Overlap \\ \hline \hline 
 			sub021 & [20,10,0] & 1 & Yes & Yes & No & No & 0.2306 \\ \hline
@@ -163,21 +177,12 @@ function [E,g] = myAffineObjective3D(p,I,J,varargin)
 			sub030 & [80,40,5] & 2 & Yes & No & No & No & 0.2909 \\ \hline
 			sub030 & [80,40,5] & 2 & Yes & Yes & No & No & 0.2536 \\ \hline
 			sub030 & [80,40,20,5] & 1 & Yes & No & No & No & 0.3107 \\ \hline
-			
+			\textbf{sub030} & \textbf{50} & \textbf{1} & \textbf{Yes} & \textbf{No} & \textbf{Yes} & \textbf{No} & \textbf{0.3643} \\ \hline
+			sub030 & 50 & 1 & Yes & Yes & Yes & No & 0.3643 \\ \hline
+			A5\_template & [20, 10, 5] & 1 & Yes & No & No & Yes & 0.3014 \\ \hline
 		\end{tabular}
 		
-		\section{Table of results for enhancements}
-		\begin{tabular}{|p{5cm}|p{8cm}|p{2cm}|}
-			\hline
-			Name & Description& meanovl \\ \hline \hline
-			3.2.1 Histogram Matching & Match histogram of fixed and moving image before performing registration & 0.2846 \\ \hline
-			3.2.2 Registration to an Unbiased Population-Derived Template & Create template by averaging input image intensities and registering to this average iteratively (j=5) & A0=0.2896 A5=0.3014\\ \hline
-			3.2.3 Defining a Mask & Set intensity to 0 for regions outside of the hippocampus using the segmentation images & 3.643 \\ \hline
-			3.2.4 Analytic Hessian Computation & Compute analytic Hessian in the objective function to speed up computations and perform more iterations at higher resolution & 0.3111 \\ \hline
-		\end{tabular}
 
-		
-		
 
 
 
