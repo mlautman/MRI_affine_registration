@@ -103,6 +103,16 @@ Jzx_phi = my_interp3(Jzx,data);
 Jzy_phi = my_interp3(Jzy,data);
 Jzz_phi = my_interp3(Jzz,data);
 
+% Jxx_phi = interpn(Jxx,phi_x,phi_y,phi_z,'linear',0);
+% Jxy_phi = interpn(Jxy,phi_x,phi_y,phi_z,'linear',0);
+% Jxz_phi = interpn(Jxz,phi_x,phi_y,phi_z,'linear',0);
+% Jyx_phi = interpn(Jyx,phi_x,phi_y,phi_z,'linear',0);
+% Jyy_phi = interpn(Jyy,phi_x,phi_y,phi_z,'linear',0);
+% Jyz_phi = interpn(Jyz,phi_x,phi_y,phi_z,'linear',0);
+% Jzx_phi = interpn(Jzx,phi_x,phi_y,phi_z,'linear',0);
+% Jzy_phi = interpn(Jzy,phi_x,phi_y,phi_z,'linear',0);
+% Jzz_phi = interpn(Jzz,phi_x,phi_y,phi_z,'linear',0);
+
 % compute Hessian of E w.r.t. p
 H = zeros(12,12);
 
